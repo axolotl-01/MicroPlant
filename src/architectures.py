@@ -38,7 +38,7 @@ class DepthwiseSeparableConv(nn.Module):
         x = self.act(x)
         return x
 
-class LightNet(nn.Module):
+class MicroPlant(nn.Module):
     def __init__(self, num_classes=38):
         super().__init__()
         self.stem = nn.Sequential(
@@ -75,8 +75,8 @@ class LightNet(nn.Module):
         x = self.fc(x)
         return x
 
-def get_lightnet(num_classes=38):
-    return LightNet(num_classes=num_classes)
+def get_microplant(num_classes=38):
+    return MicroPlant(num_classes=num_classes)
 
 def get_teacher_model(num_classes=38):
     model = models.resnet34(weights='pretrained=True') 

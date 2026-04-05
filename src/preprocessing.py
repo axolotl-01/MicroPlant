@@ -1,10 +1,12 @@
 import torch
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader, Subset
 from torchvision import transforms
 from sklearn.model_selection import train_test_split
+
 
 def set_seed(seed=0):
     np.random.seed(seed)
@@ -14,6 +16,7 @@ def set_seed(seed=0):
         torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+
 
 class make_dataset(Dataset):
     def __init__(self, root):
@@ -39,6 +42,7 @@ class make_dataset(Dataset):
         label = self.label[idx]
         return img, label
 
+
 class apply_transform(Dataset):
     
     def __init__(self, subset, transform=None):
@@ -53,6 +57,7 @@ class apply_transform(Dataset):
         if self.transform:
             img = self.transform(img)
         return img, label
+
 
 def get_dataloaders(base_root, batch_size=64, seed=0):
 
@@ -94,3 +99,29 @@ def get_dataloaders(base_root, batch_size=64, seed=0):
     test_loader = DataLoader(test_dataset, batch_size=batch_size*2, shuffle=False, pin_memory=True)
 
     return train_loader, val_loader, test_loader, full_dataset.classes
+
+
+def show_samples(loader, class_names, n_images=8):
+    images, labels = next(iter(loader))
+    
+    images = images[:n_images]
+    labels = labels[:n_images]
+
+    plt.figure(figsize=(16, 8))
+    
+    for i in range(n_images):
+        plt.subplot(2, n_images//2, i + 1)
+        
+        img = images[i].numpy().transpose((1, 2, 0))
+        
+        mean = np.array([0.485, 0.456, 0.406])
+        std = np.array([0.229, 0.224, 0.225])
+        img = std * img + mean
+        img = np.clip(img, 0, 1)
+        
+        plt.imshow(img)
+        plt.title(class_names[labels[i]])
+        plt.axis('off')
+    
+    plt.tight_layout()
+    plt.show()

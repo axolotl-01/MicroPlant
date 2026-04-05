@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.quantization as quant
 from torch.nn.utils import prune    
 from src.training import train_model
 
@@ -29,11 +30,11 @@ def remove_pruning_masks(model):
 
 def quantize_model(model, train_loader, val_loader, teacher=None,
                    epochs=8, lr=0.001, weight_decay=1e-4, qconfig='fbgemm',
-                   save_name='quantized_model', device='cpu'):
+                   save_name='quantized_model', device='DEVICE'):
     model.eval()
     model.to('cpu')
-    model.qconfig = torch.quantization.get_default_qat_qconfig(qconfig)
-    qat_model = torch.quantization.prepare_qat(model, inplace=False)
+    model.qconfig = quant.get_default_qat_qconfig(qconfig)
+    qat_model = quant.prepare_qat(model, inplace=False)
     qat_model.to(device)
 
     qat_model = train_model(
@@ -44,6 +45,6 @@ def quantize_model(model, train_loader, val_loader, teacher=None,
 
     qat_model.eval()
     qat_model.to('cpu')
-    quantized_model = torch.quantization.convert(qat_model, inplace=False)
+    quantized_model = quant.convert(qat_model, inplace=False)
 
     return quantized_model

@@ -39,7 +39,7 @@ class DepthwiseSeparableConv(nn.Module):
         return x
 
 class MicroPlant(nn.Module):
-    def __init__(self, num_classes=38):
+    def __init__(self, num_classes=4):
         super().__init__()
         self.stem = nn.Sequential(
             nn.Conv2d(3, 8, 3, stride=2, padding=1, bias=False),
@@ -75,11 +75,11 @@ class MicroPlant(nn.Module):
         x = self.fc(x)
         return x
 
-def get_microplant(num_classes=38):
+def get_microplant(num_classes=4):
     return MicroPlant(num_classes=num_classes)
 
-def get_teacher_model(num_classes=38):
-    model = models.resnet34(weights='pretrained=True') 
+def get_teacher_model(num_classes=4):
+    model = models.resnet18(weights='pretrained=True') 
     model.fc = nn.Linear(model.fc.in_features, num_classes)
     
     return model

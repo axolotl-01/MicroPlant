@@ -79,7 +79,7 @@ def get_microplant(num_classes=4):
     return MicroPlant(num_classes=num_classes)
 
 def get_teacher_model(num_classes=4):
-    model = models.resnet18(weights='pretrained=True') 
+    model = model = models.resnet18(weights="DEFAULT")
     model.fc = nn.Linear(model.fc.in_features, num_classes)
     
     return model

@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from tqdm.auto import tqdm
 from sklearn.metrics import f1_score
 
-DEVICE = 'cuda' if torch.cuda.is_available else 'cpu'
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class KnowledgeDistillationLoss(nn.Module):
     def __init__(self, alpha=0.5, temp=3.0):
@@ -27,7 +27,7 @@ def train_one_epoch(model, loader, optimizer, criterion, teacher=None, l1_lambda
     all_preds, all_labels = [], []
     total_loss = 0.0
     for X, y in tqdm(loader, desc='Training'):
-        X, y = X.to(device), y.to(device)
+        X, y = X.to(DEVICE), y.to(DEVICE)
         optimizer.zero_grad()
         out = model(X)
         if teacher is not None:
@@ -59,7 +59,7 @@ def validate(model, loader, device=DEVICE):
     total_loss = 0.0
     with torch.inference_mode():
         for X, y in loader:
-            X, y = X.to(device), y.to(device)
+            X, y = X.to(DEVICE), y.to(DEVICE)
             out = model(X)
             loss = criterion(out, y)
             total_loss += loss.item()
@@ -84,7 +84,7 @@ def train_model(model, train_loader, val_loader, epochs, teacher=None, kd_alpha=
     for epoch in range(1, epochs + 1):
         train_loss, train_f1 = train_one_epoch(model, train_loader, optimizer, criterion,
                                                 teacher=teacher, l1_lambda=l1_lambda, device=DEVICE)
-        val_loss, val_f1 = validate(model, val_loader, device=device)
+        val_loss, val_f1 = validate(model, val_loader, device=DEVICE)
         scheduler.step(val_loss)
 
         if val_f1 > best_f1:

@@ -24,10 +24,11 @@ class KnowledgeDistillationLoss(nn.Module):
 
 def train_one_epoch(model, loader, optimizer, criterion, teacher=None, l1_lambda=0.0, device=DEVICE):
     model.train()
+    model.to(device)
     all_preds, all_labels = [], []
     total_loss = 0.0
     for X, y in tqdm(loader, desc='Training'):
-        X, y = X.to(DEVICE), y.to(DEVICE)
+        X, y = X.to(device), y.to(device)
         optimizer.zero_grad()
         out = model(X)
         if teacher is not None:
@@ -54,12 +55,13 @@ def train_one_epoch(model, loader, optimizer, criterion, teacher=None, l1_lambda
 
 def validate(model, loader, device=DEVICE):
     model.eval()
+    model.to(device)
     criterion = nn.CrossEntropyLoss()
     all_preds, all_labels = [], []
     total_loss = 0.0
     with torch.inference_mode():
         for X, y in loader:
-            X, y = X.to(DEVICE), y.to(DEVICE)
+            X, y = X.to(device), y.to(device)
             out = model(X)
             loss = criterion(out, y)
             total_loss += loss.item()

@@ -91,7 +91,7 @@ def train_model(model, train_loader, val_loader, epochs, teacher=None, kd_alpha=
             best_f1 = val_f1
             torch.save(model.state_dict(), f'{save_name}_best.pth')
 
-        print(f"Epoch {epoch} | Train Loss {train_loss:.4f} Acc {train_f1:.2f} | "
+        print(f"Epoch {epoch} | Train Loss {train_loss:.4f} F1 {train_f1:.2f} | "
               f"Val Loss {val_loss:.4f} F1 {val_f1:.4f}")
 
     model.load_state_dict(torch.load(f'{save_name}_best.pth'))

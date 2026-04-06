@@ -29,32 +29,6 @@ def remove_pruning_masks(model):
                 pass
 
 
-def apply_dynamic_quantization(model, original_model_path, save_name="../models/quantized"):
-
-    model.to('cpu')
-    model.eval()
-    
-    quantized_model = torch.quantization.quantize_dynamic(
-        model, 
-        {nn.Linear}, 
-        dtype=torch.qint8
-    )
-
-    os.makedirs(os.path.dirname(save_name), exist_ok=True)
-    full_save_path = f"{save_name}.pth"
-    torch.save(quantized_model.state_dict(), full_save_path)
-    
-    original_size = os.path.getsize(original_model_path) / 1024
-    quant_size = os.path.getsize(full_save_path) / 1024
-    
-    print(f"Saved to: {full_save_path}")
-    print(f"Original Size: {original_size:.2f} KB")
-    print(f"Quantized Size: {quant_size:.2f} KB")
-    print(f"Reduction: {original_size / quant_size:.1f}x smaller")
-    
-    return quantized_model
-
-
 def quantize_model(model, train_loader, val_loader, teacher=None,
                    epochs=8, lr=0.001, weight_decay=1e-4, qconfig='fbgemm',
                    save_name='quantized_model', device='cpu'):

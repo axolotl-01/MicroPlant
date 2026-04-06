@@ -32,7 +32,7 @@ def quantize_model(model, train_loader, val_loader, teacher=None,
                    epochs=8, lr=0.001, weight_decay=1e-4, qconfig='fbgemm',
                    save_name='quantized_model', device='cpu'):
     model.train()
-    model.to('device')
+    model.to(device)
     model.qconfig = quant.get_default_qat_qconfig(qconfig)
     qat_model = quant.prepare_qat(model, inplace=False)
 

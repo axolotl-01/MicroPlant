@@ -46,4 +46,4 @@ def quantize_model(model, train_loader, val_loader, teacher=None,
     qat_model.eval()
     quantized_model = quant.convert(qat_model, inplace=False)
 
-    return quantized_model
+    return qat_model, quantized_model

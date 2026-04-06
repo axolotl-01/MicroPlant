@@ -80,8 +80,6 @@ def get_microplant(num_classes=4):
 
 def get_teacher_model(num_classes=4):
     model = model = models.resnet18(weights="DEFAULT")
-    for param in model.parameters():
-        param.requires_grad = False
     model.fc = nn.Linear(model.fc.in_features, num_classes)
     
     return model

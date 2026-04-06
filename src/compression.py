@@ -35,7 +35,6 @@ def quantize_model(model, train_loader, val_loader, teacher=None,
     model.to('cpu')
     model.qconfig = quant.get_default_qat_qconfig(qconfig)
     qat_model = quant.prepare_qat(model, inplace=False)
-    qat_model.to(device)
 
     qat_model = train_model(
         qat_model, train_loader, val_loader, epochs,
@@ -44,7 +43,6 @@ def quantize_model(model, train_loader, val_loader, teacher=None,
     )
 
     qat_model.eval()
-    qat_model.to('cpu')
     quantized_model = quant.convert(qat_model, inplace=False)
 
     return quantized_model

@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -26,6 +27,28 @@ def remove_pruning_masks(model):
                 prune.remove(module, 'weight')
             except:
                 pass
+
+
+def apply_dynamic_quantization(model, model_path):
+    model.to('cpu')
+    model.eval()
+    
+    quantized_model = torch.quantization.quantize_dynamic(
+        model, 
+        {nn.Linear}, 
+        dtype=torch.qint8
+    )
+    
+    torch.save(quantized_model.state_dict(), "model_quantized.pth")
+    
+    original_size = os.path.getsize(model_path) / 1024
+    quant_size = os.path.getsize("model_quantized.pth") / 1024
+    
+    print(f"Original Size: {original_size:.2f} KB")
+    print(f"Quantized Size: {quant_size:.2f} KB")
+    print(f"Reduction: {original_size / quant_size:.1f}x smaller")
+    
+    return quantized_model
 
 
 def quantize_model(model, train_loader, val_loader, teacher=None,
